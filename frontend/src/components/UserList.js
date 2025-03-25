@@ -17,7 +17,7 @@ const UserList = () => {
     
     const deleteUser = async (id) => {
         try {
-            await axios.delete(`${BASE_URL}/${id}`);
+            await axios.delete(`${BASE_URL}/users/${id}`);
             getUsers();
         } catch (error) {
             console.log(error);
