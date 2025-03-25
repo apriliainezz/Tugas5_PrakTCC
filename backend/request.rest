@@ -1,0 +1,29 @@
+GET http://localhost:5000/users
+
+###
+GET http://localhost:5000/users/1
+
+###
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "name": "Inez",
+    "email": "inces@gmail.com",
+    "gender": "Female",
+    "catatan": "Today, im so happy"
+}
+
+###
+PATCH http://localhost:5000/users/1
+Content-Type: application/json
+
+{
+    "name": "Aprilia Inez",
+    "email": "inces1104@gmail.com",
+    "gender": "Female",
+    "catatan": "Today, im so happy!"
+}
+
+###
+DELETE http://localhost:5000/users/2
