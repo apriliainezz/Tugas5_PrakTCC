@@ -17,7 +17,7 @@ steps:
         "deploy",
         "backend-notes-inez",
         "--image",
-        "gcr.io/$PROJECT_ID/notes-backend-wijdan",
+        "gcr.io/$PROJECT_ID/backend-notes-inez",
         "--timeout",
         "1000s",
         "--port",
