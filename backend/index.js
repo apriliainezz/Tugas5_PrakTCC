@@ -16,7 +16,11 @@ const app = express();
 app.set("view engine", "ejs");
 
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({
+    credentials: true, origin:[
+        "https://frontend-notes-inez-dot-f-08-450706.uc.r.appspot.com",
+        "http://localhost:3000"]
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => res.render("index"));
