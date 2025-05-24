@@ -5,181 +5,190 @@ import Swal from 'sweetalert2';
 import { BASE_URL } from "../utils";
 
 const Navbar = () => {
-    const [isActive, setIsActive] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const navigate = useNavigate();
+  const [isActive, setIsActive] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
-    // Effect untuk mendeteksi scroll
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 20) {
-                setScrolled(true);
-            } else {
-                setScrolled(false);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
-    const handleLogout = async () => {
-        const result = await Swal.fire({
-            title: "Yakin ingin logout?",
-            text: "Anda akan keluar dari sistem.",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Ya, logout",
-            cancelButtonText: "Batal"
-        });
-
-        if (result.isConfirmed) {
-            const token = localStorage.getItem("accessToken");
-
-            try {
-                await axios.delete(`${BASE_URL}/logout`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                    withCredentials: true
-                });
-            } catch (error) {
-                console.warn("Logout error:", error?.response?.data || error.message);
-            } finally {
-                localStorage.removeItem("accessToken");
-                delete axios.defaults.headers.common["Authorization"];
-
-                Swal.fire({
-                    icon: "success",
-                    title: "Logout Berhasil",
-                    text: "Anda telah keluar dari sistem.",
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-                navigate("/");
-            }
-        }
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
     };
 
-    return (
-        <nav 
-            className={`navbar is-primary has-shadow ${scrolled ? 'is-fixed-top' : ''}`} 
-            role="navigation" 
-            aria-label="main navigation"
-            style={{
-                transition: 'all 0.3s ease',
-                borderRadius: scrolled ? '0' : '0 0 10px 10px',
-                boxShadow: scrolled 
-                    ? '0 2px 10px rgba(0, 0, 0, 0.1)' 
-                    : '0 4px 12px rgba(0, 0, 0, 0.08)',
-                minHeight: '3.8rem',
-                paddingTop: '0.3rem',
-                paddingBottom: '0.3rem'
-            }}
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Yakin ingin logout?",
+      text: "Anda akan keluar dari sistem.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#a0522d",
+      cancelButtonColor: "#d2b48c",
+      confirmButtonText: "Ya, logout",
+      cancelButtonText: "Batal"
+    });
+
+    if (result.isConfirmed) {
+      const token = localStorage.getItem("accessToken");
+      try {
+        await axios.delete(`${BASE_URL}/logout`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        });
+      } catch (error) {
+        console.warn("Logout error:", error?.response?.data || error.message);
+      } finally {
+        localStorage.removeItem("accessToken");
+        delete axios.defaults.headers.common["Authorization"];
+        Swal.fire({
+          icon: "success",
+          title: "Logout Berhasil",
+          text: "Anda telah keluar dari sistem.",
+          timer: 1500,
+          showConfirmButton: false
+        });
+        navigate("/");
+      }
+    }
+  };
+
+  return (
+    <nav
+      className={`navbar ${scrolled ? 'is-fixed-top' : ''}`}
+      role="navigation"
+      aria-label="main navigation"
+      style={{
+        backgroundColor: '#f4e9dc', // coklat pastel sangat terang
+        boxShadow: scrolled
+          ? '0 3px 8px rgba(160, 82, 45, 0.3)'
+          : 'none',
+        padding: '0.5rem 1rem',
+        transition: 'box-shadow 0.3s ease',
+        borderBottomLeftRadius: scrolled ? 0 : 10,
+        borderBottomRightRadius: scrolled ? 0 : 10,
+        color: '#6b4c3b',
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+      }}
+    >
+      <div className="container is-flex is-align-items-center is-justify-content-space-between" style={{ gap: '1rem' }}>
+        {/* Logo */}
+        <div
+          className="navbar-item"
+          style={{
+            fontWeight: '700',
+            fontSize: '1.7rem',
+            letterSpacing: '0.6px',
+            color: '#6b4c3b',
+            userSelect: 'none',
+            cursor: 'default',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
         >
-            <div className="container">
-                <div className="navbar-brand">
-                    <a 
-                        className="navbar-item" 
-                        style={{ 
-                            fontWeight: 700, 
-                            letterSpacing: '0.5px',
-                            fontSize: '1.8rem',
-                            paddingRight: '1.5rem' // Menambah jarak di sebelah kanan logo
-                        }}
-                    >
-                        <i className="fas fa-book-open mr-2"></i>
-                        NotesApp
-                    </a>
-                </div>
+          <i className="fas fa-book-open"></i>
+          NotesApp
+        </div>
 
-                <div className={`navbar-menu ${isActive ? 'is-active' : ''}`}>
-                    <div className="navbar-start" style={{ marginLeft: '0.5rem' }}>
-                        <NavLink 
-                            to="/dashboard" 
-                            className={({ isActive }) => 
-                                `navbar-item ${isActive ? 'is-active' : ''}`
-                            }
-                            style={({ isActive }) => ({
-                                fontWeight: isActive ? '600' : '400',
-                                borderBottom: isActive ? '2px solid white' : 'none',
-                                transition: 'all 0.2s ease',
-                                borderRadius: '4px',
-                                margin: '0 5px',
-                                paddingTop: '0.7rem',
-                                paddingBottom: '0.7rem'
-                            })}
-                        >
-                            <span className="icon-text">
-                                <span className="icon">
-                                    <i className="fas fa-home"></i>
-                                </span>
-                                <span>Home</span>
-                            </span>
-                        </NavLink>
-                        
-                        <NavLink 
-                            to="/add" 
-                            className={({ isActive }) => 
-                                `navbar-item ${isActive ? 'is-active' : ''}`
-                            }
-                            style={({ isActive }) => ({
-                                fontWeight: isActive ? '600' : '400',
-                                borderBottom: isActive ? '2px solid white' : 'none',
-                                transition: 'all 0.2s ease',
-                                borderRadius: '4px',
-                                margin: '0 5px',
-                                paddingTop: '0.7rem',
-                                paddingBottom: '0.7rem'
-                            })}
-                        >
-                            <span className="icon-text">
-                                <span className="icon">
-                                    <i className="fas fa-plus"></i>
-                                </span>
-                                <span>Tambah Catatan</span>
-                            </span>
-                        </NavLink>
-                    </div>
+        {/* Burger menu untuk mobile */}
+        <button
+          className={`navbar-burger ${isActive ? 'is-active' : ''}`}
+          aria-label="menu"
+          aria-expanded={isActive}
+          onClick={() => setIsActive(!isActive)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: '#6b4c3b',
+            display: 'none', // default sembunyikan, pakai CSS media query untuk tampil di mobile
+          }}
+          id="burger-button"
+        >
+          <span style={{ backgroundColor: '#6b4c3b' }}></span>
+          <span style={{ backgroundColor: '#6b4c3b' }}></span>
+          <span style={{ backgroundColor: '#6b4c3b' }}></span>
+        </button>
 
-                    <div className="navbar-end">
-                        <div className="navbar-item" style={{ paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-                            <div className="buttons">
-                                <button 
-                                    onClick={handleLogout} 
-                                    className="button is-danger is-light" 
-                                    style={{
-                                        borderRadius: '20px',
-                                        fontWeight: '500',
-                                        transition: 'all 0.3s ease',
-                                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
-                                    }}
-                                    onMouseOver={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(-2px)';
-                                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-                                    }}
-                                >
-                                    <span className="icon">
-                                        <i className="fas fa-sign-out-alt"></i>
-                                    </span>
-                                    <span>Log Out</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    );
+        {/* Menu Items */}
+        <div className={`navbar-menu ${isActive ? 'is-active' : ''}`} style={{ flexGrow: 1 }}>
+          <div className="navbar-start" style={{ display: 'flex', gap: '1rem' }}>
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => (isActive ? 'is-active' : '')}
+              style={({ isActive }) => ({
+                padding: '0.5rem 1rem',
+                borderRadius: 6,
+                fontWeight: isActive ? '700' : '500',
+                color: isActive ? '#a0522d' : '#6b4c3b',
+                backgroundColor: isActive ? '#f0d9b5' : 'transparent',
+                textDecoration: 'none',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              })}
+            >
+              <i className="fas fa-home"></i> Home
+            </NavLink>
+
+            <NavLink
+              to="/add"
+              className={({ isActive }) => (isActive ? 'is-active' : '')}
+              style={({ isActive }) => ({
+                padding: '0.5rem 1rem',
+                borderRadius: 6,
+                fontWeight: isActive ? '700' : '500',
+                color: isActive ? '#a0522d' : '#6b4c3b',
+                backgroundColor: isActive ? '#f0d9b5' : 'transparent',
+                textDecoration: 'none',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              })}
+            >
+              <i className="fas fa-plus"></i> Tambah Catatan
+            </NavLink>
+          </div>
+
+          {/* Logout button di kanan */}
+          <div className="navbar-end" style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+            <button
+              onClick={handleLogout}
+              style={{
+                backgroundColor: '#a0522d',
+                color: '#f4e9dc',
+                border: 'none',
+                padding: '0.45rem 1rem',
+                borderRadius: 20,
+                fontWeight: 600,
+                cursor: 'pointer',
+                boxShadow: '0 3px 6px rgba(160, 82, 45, 0.3)',
+                transition: 'background-color 0.3s ease, transform 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                userSelect: 'none'
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.backgroundColor = '#8b3d1a';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.backgroundColor = '#a0522d';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <i className="fas fa-sign-out-alt"></i> Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;

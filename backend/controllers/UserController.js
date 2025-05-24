@@ -144,9 +144,9 @@ export const getNoteById = async (req, res) => {
 // Create new note
 export const createNote = async (req, res) => {
   try {
-    const { title, content, date } = req.body;
+    const { tittle, content, date } = req.body;
     await Note.create({
-      title,
+      tittle,
       content,
       date,
       userId: req.userId

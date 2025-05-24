@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { BASE_URL } from "../utils";
-import { jwtDecode } from "jwt-decode";  // perbaiki import jwtDecode
+import { jwtDecode } from "jwt-decode";  // tetap sama
 
 const Dashboard = () => {
     const [notes, setNotes] = useState([]);
@@ -27,16 +27,13 @@ const Dashboard = () => {
                 return;
             }
 
-            // Logout otomatis setelah token expired
             const logoutTimer = setTimeout(() => {
                 localStorage.removeItem("accessToken");
                 window.location.href = "/";
             }, timeLeft * 1000);
 
-            // Ambil catatan hanya jika token masih valid
             getNotes();
 
-            // Bersihkan timer saat komponen unmount
             return () => clearTimeout(logoutTimer);
         } catch (err) {
             localStorage.removeItem("accessToken");
@@ -48,13 +45,10 @@ const Dashboard = () => {
         try {
             const token = localStorage.getItem("accessToken");
             const response = await axios.get(`${BASE_URL}/notes`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers: { Authorization: `Bearer ${token}` }
             });
             setNotes(response.data);
         } catch (error) {
-            console.error(error);
             Swal.fire({
                 icon: "error",
                 title: "Gagal mengambil data",
@@ -69,8 +63,8 @@ const Dashboard = () => {
             text: "Data yang dihapus tidak bisa dikembalikan!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
+            confirmButtonColor: "#a65a33", // coklat gelap
+            cancelButtonColor: "#bfb5a2",  // coklat pastel lembut
             confirmButtonText: "Ya, Hapus!",
             cancelButtonText: "Batal",
         }).then(async (result) => {
@@ -78,15 +72,11 @@ const Dashboard = () => {
                 try {
                     const token = localStorage.getItem("accessToken");
                     await axios.delete(`${BASE_URL}/notes/${id}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                        headers: { Authorization: `Bearer ${token}` }
                     });
-
                     Swal.fire("Dihapus!", "Data berhasil dihapus.", "success");
                     setNotes(notes.filter(note => note.id !== id));
                 } catch (error) {
-                    console.error(error);
                     Swal.fire({
                         icon: "error",
                         title: "Gagal menghapus",
@@ -98,69 +88,163 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="columns mt-5 is-centered">
-            <div className="column is-three-quarters">
-                <div className="box has-shadow p-5" style={{ borderRadius: "12px" }}>
-                    <h2 className="title is-4 has-text-centered has-text-success">Daftar Catatan</h2>
-                    <div className="mb-3">
-                        <Link to={`/add`} className="button is-success is-rounded has-text-weight-semibold">
-                            Tambah Catatan
-                        </Link>
-                    </div>
-                    <table
-                        className="table is-fullwidth is-striped is-hoverable"
-                        style={{ borderRadius: "12px", overflow: "hidden" }}
+        <div
+            style={{
+                minHeight: "100vh",
+                backgroundColor: "#f5efe6", // coklat pastel sangat lembut
+                padding: "2rem 1rem",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+            }}
+        >
+            <div
+                style={{
+                    width: "100%",
+                    maxWidth: "960px",
+                    backgroundColor: "#fffaf0", // putih krem lembut
+                    borderRadius: "14px",
+                    boxShadow: "0 8px 16px rgba(166, 138, 115, 0.25)",
+                    padding: "2rem",
+                }}
+            >
+                <h2
+                    style={{
+                        textAlign: "center",
+                        fontWeight: "700",
+                        fontSize: "1.8rem",
+                        color: "#8b5e3c", // coklat tua
+                        marginBottom: "1.5rem",
+                        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                    }}
+                >
+                    Daftar Catatan
+                </h2>
+
+                <div style={{ marginBottom: "1.5rem", textAlign: "right" }}>
+                    <Link
+                        to={`/add`}
+                        style={{
+                            backgroundColor: "#d9b48f",
+                            color: "#4a2e14",
+                            padding: "0.5rem 1.2rem",
+                            borderRadius: "24px",
+                            fontWeight: "600",
+                            textDecoration: "none",
+                            boxShadow: "0 4px 8px rgba(213, 165, 112, 0.4)",
+                            transition: "background-color 0.3s ease",
+                            userSelect: "none",
+                            display: "inline-block",
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#c89a6e")}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#d9b48f")}
                     >
-                        <thead>
-                            <tr className="has-background-success-dark">
-                                <th className="has-text-centered">No</th>
-                                <th className="has-text-centered">Tanggal</th>
-                                <th className="has-text-centered">Kategori</th>
-                                <th className="has-text-centered">Isi Catatan</th>
-                                <th className="has-text-centered">Aksi</th>
+                        Tambah Catatan
+                    </Link>
+                </div>
+
+                <table
+                    style={{
+                        width: "100%",
+                        borderCollapse: "separate",
+                        borderSpacing: "0 10px",
+                        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                    }}
+                >
+                    <thead>
+                        <tr style={{ backgroundColor: "#a65a33", color: "#fff", borderRadius: "12px" }}>
+                            <th style={thStyle}>No</th>
+                            <th style={thStyle}>Tanggal</th>
+                            <th style={thStyle}>Kategori</th>
+                            <th style={thStyle}>Isi Catatan</th>
+                            <th style={thStyle}>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {notes.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" style={{
+                                    textAlign: "center",
+                                    padding: "1.5rem",
+                                    color: "#a67c52",
+                                    fontStyle: "italic",
+                                }}>
+                                    Belum terdapat catatan. Silakan melakukan input catatan.
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {notes.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="has-text-centered has-text-grey-light">
-                                        Belum terdapat catatan. Silakan melakukan input catatan.
+                        ) : (
+                            notes.map((note, index) => (
+                                <tr key={note.id} style={{ backgroundColor: "#f9f1e9", borderRadius: "12px" }}>
+                                    <td style={tdCenterStyle}>{index + 1}</td>
+                                    <td style={tdCenterStyle}>{note.date ? note.date.substring(0, 10) : ""}</td>
+                                    <td style={tdCenterStyle}>{note.tittle}</td>
+                                    <td style={{ padding: "0.5rem 1rem", color: "#5c4033" }}>{note.content}</td>
+                                    <td style={tdCenterStyle}>
+                                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+                                            <Link
+                                                to={`/edit/${note.id}`}
+                                                style={{
+                                                    backgroundColor: "#c89a6e",
+                                                    color: "#4a2e14",
+                                                    borderRadius: "8px",
+                                                    padding: "0.3rem 0.8rem",
+                                                    fontSize: "0.9rem",
+                                                    textDecoration: "none",
+                                                    boxShadow: "0 2px 6px rgba(200, 154, 110, 0.5)",
+                                                    userSelect: "none",
+                                                    transition: "background-color 0.3s ease",
+                                                }}
+                                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#b37f4e")}
+                                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#c89a6e")}
+                                            >
+                                                Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => deleteNote(note.id)}
+                                                style={{
+                                                    backgroundColor: "#d9946c",
+                                                    border: "none",
+                                                    borderRadius: "8px",
+                                                    padding: "0.3rem 0.8rem",
+                                                    fontSize: "0.9rem",
+                                                    color: "#4a2e14",
+                                                    cursor: "pointer",
+                                                    boxShadow: "0 2px 6px rgba(217, 148, 108, 0.5)",
+                                                    transition: "background-color 0.3s ease",
+                                                    userSelect: "none",
+                                                }}
+                                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#b06e42")}
+                                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#d9946c")}
+                                            >
+                                                Hapus
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
-                            ) : (
-                                notes.map((note, index) => (
-                                    <tr key={note.id}>
-                                        <td className="has-text-centered">{index + 1}</td>
-                                        <td className="has-text-centered">
-                                            {note.date ? note.date.substring(0, 10) : ""}
-                                        </td>
-                                        <td className="has-text-centered">{note.tittle}</td> {/* disesuaikan dengan nama kolom */}
-                                        <td>{note.content}</td>
-                                        <td className="has-text-centered">
-                                            <div className="buttons are-small is-centered">
-                                                <Link
-                                                    to={`/edit/${note.id}`}
-                                                    className="button is-info is-light"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    onClick={() => deleteNote(note.id)}
-                                                    className="button is-danger is-light"
-                                                >
-                                                    Hapus
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
+};
+
+// Styles for table headers and cells
+const thStyle = {
+    padding: "0.8rem 1rem",
+    textAlign: "center",
+    borderRadius: "12px 12px 0 0",
+    fontWeight: "600",
+    fontSize: "1rem",
+    userSelect: "none",
+};
+
+const tdCenterStyle = {
+    padding: "0.7rem 1rem",
+    textAlign: "center",
+    color: "#6b4c34",
+    verticalAlign: "middle",
 };
 
 export default Dashboard;

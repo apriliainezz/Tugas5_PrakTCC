@@ -40,10 +40,28 @@ const Login = () => {
   };
 
   return (
-    <div className="columns is-centered mt-6">
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#f2e8dc", // warna pastel coklat muda
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2rem",
+      }}
+    >
       <div className="column is-half">
-        <div className="box has-shadow p-5" style={{ borderRadius: "12px" }}>
-          <h2 className="title is-4 has-text-centered has-text-primary">Login</h2>
+        <div
+          className="box p-5"
+          style={{
+            borderRadius: "16px",
+            backgroundColor: "#fdf7f0",
+            boxShadow: "0 4px 12px rgba(139, 94, 60, 0.2)",
+          }}
+        >
+          <h2 className="title is-4 has-text-centered" style={{ color: "#8b5e3c" }}>
+            Login APP Notes Inces
+          </h2>
 
           {msg && (
             <p className="has-text-centered has-text-danger" style={{ marginBottom: "1rem" }}>
@@ -53,7 +71,7 @@ const Login = () => {
 
           <form onSubmit={loginHandler}>
             <div className="field">
-              <label className="label">Email</label>
+              <label className="label" style={{ color: "#5c4033" }}>Email</label>
               <div className="control">
                 <input
                   type="email"
@@ -62,12 +80,16 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  style={{
+                    borderColor: "#d8bca2",
+                    backgroundColor: "#fffaf6",
+                  }}
                 />
               </div>
             </div>
 
             <div className="field">
-              <label className="label">Password</label>
+              <label className="label" style={{ color: "#5c4033" }}>Password</label>
               <div className="control">
                 <input
                   type="password"
@@ -76,25 +98,45 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  style={{
+                    borderColor: "#d8bca2",
+                    backgroundColor: "#fffaf6",
+                  }}
                 />
               </div>
             </div>
 
             <div className="field mt-4">
-              <button type="submit" className="button is-primary is-rounded is-fullwidth">
+              <button
+                type="submit"
+                className="button is-rounded is-fullwidth"
+                style={{
+                  backgroundColor: "#8b5e3c",
+                  color: "white",
+                  border: "none",
+                }}
+              >
                 Login
               </button>
             </div>
           </form>
 
-          {/* Tambah tombol untuk pindah ke halaman Register */}
+          {/* Tombol daftar + tulisan (Register) */}
           <div className="has-text-centered mt-4">
             <button
-              className="button is-link is-light is-rounded"
+              className="button is-light is-rounded"
               onClick={() => navigate("/register")}
+              style={{
+                backgroundColor: "#e8d8c3",
+                color: "#5c4033",
+                border: "1px solid #d8bca2",
+              }}
             >
               Daftar Akun Baru
             </button>
+            <p style={{ marginTop: "6px", fontSize: "0.85rem", color: "#7a5c3e" }}>
+              (Register)
+            </p>
           </div>
         </div>
       </div>
