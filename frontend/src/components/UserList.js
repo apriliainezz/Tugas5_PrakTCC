@@ -1,199 +1,114 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { BASE_URL } from "../utils";
 
 const UserList = () => {
-    const [users, setUser] = useState([]);
+    const [notes, setNotes] = useState([]);
+
     useEffect(() => {
-        getUsers();
+        getNotes();
     }, []);
 
-
-    const getUsers = async () => {
-        const response = await axios.get(`${BASE_URL}/users`);
-        setUser(response.data);
-    }
-    
-    const deleteUser = async (id) => {
+    const getNotes = async () => {
         try {
-            await axios.delete(`${BASE_URL}/users/${id}`);
-            getUsers();
+            const token = localStorage.getItem("accessToken");
+            const response = await axios.get(`${BASE_URL}/notes`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setNotes(response.data);
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                icon: "error",
+                title: "Gagal mengambil data",
+                text: error.response?.data?.message || "Terjadi kesalahan saat mengambil data catatan.",
+            });
         }
-    }
+    };
 
+    const deleteNote = async (id) => {
+        Swal.fire({
+            title: "Yakin ingin menghapus?",
+            text: "Data yang dihapus tidak bisa dikembalikan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Ya, Hapus!",
+            cancelButtonText: "Batal",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const token = localStorage.getItem("accessToken");
+                    await axios.delete(`${BASE_URL}/notes/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
 
-    const styles = {
-        container: {
-            backgroundColor: "#f5e6ca",
-            minHeight: "100vh",
-            padding: "30px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-        },
-        tableContainer: {
-            backgroundColor: "#fff8e1", 
-            padding: "30px",
-            borderRadius: "12px",
-            boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.15)",
-            width: "85%",
-        },
-        headerContainer: {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-        },
-        headerTitle: {
-            fontSize: "28px",
-            fontWeight: "bold",
-            color: "#6c584c",
-            fontFamily: "Arial, sans-serif",
-            letterSpacing: "1px",
-        },
-        buttonAdd: {
-            backgroundColor: "#a67c52",
-            color: "white",
-            padding: "12px 20px",
-            borderRadius: "8px",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: "bold",
-            boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.2)",
-            transition: "all 0.3s ease",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-        },
-        buttonAddHover: {
-            backgroundColor: "#8d6a4b",
-        },
-        table: {
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-        },
-        th: {
-            backgroundColor: "#d4a373",
-            color: "white",
-            padding: "12px",
-            fontSize: "16px",
-            fontWeight: "bold",
-            borderBottom: "2px solid #b08968",
-        },
-        td: {
-            padding: "12px",
-            borderBottom: "1px solid #c5a880",
-            fontSize: "14px",
-            color: "#6c584c",
-        },
-        trHover: {
-            backgroundColor: "#faedcd",
-            transition: "background 0.3s ease",
-        },
-        buttonEdit: {
-            backgroundColor: "#6c584c",
-            color: "white",
-            padding: "6px 12px",
-            borderRadius: "6px",
-            marginRight: "5px",
-            cursor: "pointer",
-            fontSize: "13px",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "5px",
-            transition: "background 0.3s ease",
-        },
-        buttonEditHover: {
-            backgroundColor: "#5a4b3c",
-        },
-        buttonDelete: {
-            backgroundColor: "#b56576",
-            color: "white",
-            padding: "6px 12px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "13px",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "5px",
-            transition: "background 0.3s ease",
-        },
-        buttonDeleteHover: {
-            backgroundColor: "#9b4e64",
-        },
+                    Swal.fire("Dihapus!", "Data berhasil dihapus.", "success");
+                    setNotes(notes.filter(note => note.id !== id));
+                } catch (error) {
+                    console.log(error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal menghapus",
+                        text: error.response?.data?.message || "Terjadi kesalahan saat menghapus data.",
+                    });
+                }
+            }
+        });
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.tableContainer}>
-                {/* Header dengan tombol Add New Notes */}
-                <div style={styles.headerContainer}>
-                    <h2 style={styles.headerTitle}>📋 DAILY NOTES</h2>
-                    <Link 
-                        to="add" 
-                        style={styles.buttonAdd}
-                        onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonAddHover.backgroundColor)}
-                        onMouseOut={(e) => (e.target.style.backgroundColor = styles.buttonAdd.backgroundColor)}
-                    >
-                        📌 Add New Notes
-                    </Link>
-                </div>
-
-                {/* Tabel */}
-                <table style={styles.table}>
-                    <thead>
-                        <tr>
-                            <th style={styles.th}>No</th>
-                            <th style={styles.th}>Name</th>
-                            <th style={styles.th}>Email</th>
-                            <th style={styles.th}>Gender</th>
-                            <th style={styles.th}>Catatan</th>
-                            <th style={styles.th}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map((user, index) => (
-                            <tr 
-                                key={user.id} 
-                                style={{ ...styles.td, cursor: "pointer" }}
-                                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = styles.trHover.backgroundColor)}
-                                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                            >
-                                <td style={styles.td}>{index + 1}</td>
-                                <td style={styles.td}>{user.name}</td>
-                                <td style={styles.td}>{user.email}</td>
-                                <td style={styles.td}>{user.gender}</td>
-                                <td style={styles.td}>{user.catatan}</td>
-                                <td style={styles.td}>
-                                    <Link 
-                                        to={`edit/${user.id}`} 
-                                        style={styles.buttonEdit}
-                                        onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonEditHover.backgroundColor)}
-                                        onMouseOut={(e) => (e.target.style.backgroundColor = styles.buttonEdit.backgroundColor)}
-                                    >
-                                        ✏️ Edit
-                                    </Link>
-                                    <button 
-                                        onClick={() => deleteUser(user.id)} 
-                                        style={styles.buttonDelete}
-                                        onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonDeleteHover.backgroundColor)}
-                                        onMouseOut={(e) => (e.target.style.backgroundColor = styles.buttonDelete.backgroundColor)}
-                                    >
-                                        🗑️ Delete
-                                    </button>
-                                </td>
+        <div className="columns mt-5 is-centered">
+            <div className="column is-three-quarters">
+                <div className="box has-shadow p-5" style={{ borderRadius: "12px" }}>
+                    <h2 className="title is-4 has-text-centered has-text-success">Daftar Catatan</h2>
+                    <div className="mb-3">
+                        <Link to={`add`} className="button is-success is-rounded has-text-weight-semibold">
+                            Tambah Catatan
+                        </Link>
+                    </div>
+                    <table className="table is-fullwidth is-striped is-hoverable" style={{ borderRadius: "12px", overflow: "hidden" }}>
+                        <thead>
+                            <tr className="has-background-success-dark">
+                                <th className="has-text-centered">No</th>
+                                <th className="has-text-centered">Tanggal</th>
+                                <th className="has-text-centered">Kategori</th>
+                                <th className="has-text-centered">Isi Catatan</th>
+                                <th className="has-text-centered">Aksi</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {notes.map((note, index) => (
+                                <tr key={note.id}>
+                                    <td className="has-text-centered">{index + 1}</td>
+                                    <td className="has-text-centered">{note.date ? note.date.substring(0, 10) : ""}</td>
+                                    <td className="has-text-centered">{note.tittle}</td>
+                                    <td>{note.content}</td>
+                                    <td className="has-text-centered">
+                                        <div className="buttons are-small is-centered">
+                                            <Link to={`edit/${note.id}`} className="button is-info is-light">
+                                                Edit
+                                            </Link>
+                                            <button onClick={() => deleteNote(note.id)} className="button is-danger is-light">
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
 };
-
 
 export default UserList;
