@@ -8,12 +8,12 @@ import db from "./config/Database.js";
 // Import semua model dan asosiasi
 import "./models/UserModel.js";
 import "./models/NoteModel.js";
-import "./models/associations.js"; // Tambahkan ini agar relasi antar model aktif
+import "./models/associations.js"; // Aktifkan relasi antar model
+
+dotenv.config();
 
 const app = express();
 app.set("view engine", "ejs");
-
-dotenv.config();
 
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
@@ -22,13 +22,16 @@ app.use(express.json());
 app.get("/", (req, res) => res.render("index"));
 app.use(UserRoute);
 
-// Sinkronisasi database
+// Sinkronisasi database dan jalankan server
 (async () => {
   try {
-    await db.sync(); // Atau db.sync({ force: true }) jika ingin reset tabel
+    await db.sync(); // Gunakan db.sync({ force: true }) jika perlu reset tabel
     console.log("Database synced!");
-    
-    app.listen(5000, () => console.log("Server connected on port 5000"));
+
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server connected on port ${PORT}`);
+    });
   } catch (error) {
     console.error("DB Sync Error:", error);
   }
