@@ -57,7 +57,7 @@ export const loginHandler = async (req, res) => {
     const userPlain = user.toJSON();
     const { password: _, refresh_token: __, ...safeUserData } = userPlain;
 
-    const accessToken = jwt.sign(safeUserData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+    const accessToken = jwt.sign(safeUserData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
     const refreshToken = jwt.sign(safeUserData, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
 
     await User.update({ refresh_token: refreshToken }, { where: { id: user.id } });
