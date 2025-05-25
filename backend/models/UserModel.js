@@ -20,7 +20,7 @@ const User = db.define("users", {
     allowNull: false
   },
   refresh_token: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true
   }
 }, {
