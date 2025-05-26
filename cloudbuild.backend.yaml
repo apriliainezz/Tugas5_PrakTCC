@@ -22,7 +22,7 @@ steps:
         "--timeout",
         "1000s",
         "--port",
-        "4001",
+        "8080",
         "--region",
         "us-central1",
         "--allow-unauthenticated",

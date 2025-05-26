@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Buka port 5000 (meskipun Cloud Run override ini, tetap baik untuk dokumentasi)
-EXPOSE 4001
+EXPOSE 8080
 
 # Jalankan aplikasi
 CMD ["node", "index.js"]
