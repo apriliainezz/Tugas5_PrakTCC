@@ -10,11 +10,13 @@ COPY package*.json ./
 # Install dependensi
 RUN npm install
 
+RUN cat .env
+
 # Copy semua file proyek
 COPY . .
 
 # Buka port 5000 (meskipun Cloud Run override ini, tetap baik untuk dokumentasi)
-EXPOSE 8080
+EXPOSE 4001
 
 # Jalankan aplikasi
 CMD ["node", "index.js"]

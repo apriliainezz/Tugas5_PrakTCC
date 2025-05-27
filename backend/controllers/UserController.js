@@ -63,7 +63,7 @@ export const loginHandler = async (req, res) => {
     await User.update({ refresh_token: refreshToken }, { where: { id: user.id } });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: 'none',
       secure: true,
       maxAge: 24 * 60 * 60 * 1000

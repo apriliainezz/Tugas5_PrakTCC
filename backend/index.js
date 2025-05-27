@@ -13,25 +13,24 @@ import "./models/associations.js"; // Aktifkan relasi antar model
 dotenv.config();
 
 const app = express();
-app.set("view engine", "ejs");
 
 app.use(cookieParser());
 app.use(cors({
     credentials: true, origin:
-        "http://localhost:3000"
+        "https://frontend-notes-inez-dot-f-08-450706.uc.r.appspot.com"
 }));
 app.use(express.json());
 
-app.get("/", (req, res) => res.render("index"));
 app.use(UserRoute);
+
+const port = process.env.PORT;
 
 // Sinkronisasi database dan jalankan server
 (async () => {
   try {
     await db.sync(); // Gunakan db.sync({ force: true }) jika perlu reset tabel
-    console.log("Database synced!");
-
-    const PORT = process.env.PORT || 4001;
+      console.log("Database synced!");
+      
     app.listen(PORT, () => {
       console.log(`Server connected on port ${PORT}`);
     });
