@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy file dependensi
-COPY package*.json ./
+COPY . .
 
 # Install dependensi
 RUN npm install
