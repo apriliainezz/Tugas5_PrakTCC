@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(UserRoute);
 
-const port = process.env.PORT;
+const PORT = process.env.PORT || 4001;
 
 // Sinkronisasi database dan jalankan server
 (async () => {
